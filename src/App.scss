@@ -1,0 +1,30 @@
+.TimersApp {
+  margin-top: 50px;
+  width: 1000px;
+
+  &__controls {
+    display: flex;
+    flex-direction: row;
+
+    button {
+      margin-right: 10px;
+    }
+
+    button:last-child {
+      margin-left: auto;
+    }
+  }
+
+  &__logs {
+    display: flex;
+    flex-direction: column;
+
+    &-title {
+      text-align: center;
+    }
+
+    &-output {
+
+    }
+  }
+}
