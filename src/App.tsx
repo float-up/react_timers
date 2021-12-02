@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Button from "./Components/Button";
 import './App.scss';
+import Textarea from "./Components/Textarea";
 
-// создаем генератор таймеров
+// create a timers generator
 function* generateTimers(timersQueue: Array<number>) {
     for (let i = 0; i < timersQueue.length; i++) {
         yield timersQueue[i]
@@ -13,14 +14,15 @@ const timersQueue: Array<number> = []
 
 const App = () => {
 
+    // output to the logs field
     const [logs, setLogs] = useState<Array<string>>([])
+    // current timeout ID for cancelling
     const [timeoutId, setTimeoutId] = useState<any>()
-    const [isTimersStarted, setIsTimerStarted] = useState<boolean | undefined>(false)
+    // mark the generator is running
+    const [isTimersStarted, setIsTimerStarted] = useState<boolean>(false)
+    // generator initializer
     const [timersGenerator, setTimersGenerator] = useState(generateTimers(timersQueue))
 
-    console.log('isTimersStarted', isTimersStarted)
-
-    // добавляет таймер в очередь
     const addTimer = (timer: number) => {
         timersQueue.push(timer)
 
@@ -31,18 +33,14 @@ const App = () => {
         }
     }
 
-    // пишет в лог вывод
     const writeLog = (delay: number) => {
         setLogs(oldValues => [...oldValues, new Date().toLocaleTimeString() + ": " + delay + '\n'])
     }
 
-    // Запуск таймера
     function startTimer() {
-
         let timer = timersGenerator.next()
 
         if (timer.done) {
-            console.log('if (timer.done) {')
             setIsTimerStarted(false);
             timersQueue.length = 0
             return;
@@ -55,7 +53,6 @@ const App = () => {
         setTimeoutId(timeoutId)
     }
 
-    // clear the text area logs field
     const clearLogs = () => {
         setLogs([])
         clearTimeout(timeoutId)
@@ -63,7 +60,6 @@ const App = () => {
 
     return (
         <div className="TimersApp">
-
             <div className="TimersApp__controls">
                 <Button title="Таймер 1" onClick={() => addTimer(1)}/>
                 <Button title="Таймер 2" onClick={() => addTimer(2)}/>
@@ -75,11 +71,8 @@ const App = () => {
             <div className="TimersApp__logs">
                 <h5 className="TimersApp__logs-title">Логи</h5>
 
-                <textarea className="TimersApp__logs-output" readOnly={true} value={logs.join('')} rows={15}/>
-
+                <Textarea data={logs.join('')} className="TimersApp__logs-output" rows={15} readOnly={true} />
             </div>
-
-
         </div>
     );
 }
