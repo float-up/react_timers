@@ -1,11 +1,11 @@
 import React, {HTMLAttributes} from "react";
 
-interface ITextareaProps extends HTMLAttributes<HTMLTextAreaElement>  {
+interface TextareaProps extends HTMLAttributes<HTMLTextAreaElement>  {
     data: string;
     [x: string]: any
 }
 
-const Textarea = ({className, data, rows, readOnly}: ITextareaProps) => {
+const Textarea = ({className, data, rows, readOnly}: TextareaProps) => {
     return (
             <textarea
                 className={className}

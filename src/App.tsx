@@ -1,16 +1,17 @@
 import React, {useState} from 'react';
 import Button from "./Components/Button";
-import './App.scss';
 import Textarea from "./Components/Textarea";
+import {Timer} from "./utils/interfaces";
+import './App.scss';
 
 // create a timers generator
-function* generateTimers(timersQueue: Array<number>) {
+function* generateTimers(timersQueue: Array<Timer>) {
     for (let i = 0; i < timersQueue.length; i++) {
         yield timersQueue[i]
     }
 }
 
-const timersQueue: Array<number> = []
+const timersQueue: Array<Timer> = []
 
 const App = () => {
 
@@ -24,7 +25,8 @@ const App = () => {
     const [timersGenerator, setTimersGenerator] = useState(generateTimers(timersQueue))
 
     const addTimer = (timer: number) => {
-        timersQueue.push(timer)
+        const clickTime = new Date().toLocaleTimeString();
+        timersQueue.push({delay: timer, clickTime: clickTime})
 
         if (!isTimersStarted) {
             setTimersGenerator(generateTimers(timersQueue))
@@ -33,8 +35,8 @@ const App = () => {
         }
     }
 
-    const writeLog = (delay: number) => {
-        setLogs(oldValues => [...oldValues, new Date().toLocaleTimeString() + ": " + delay + '\n'])
+    const writeLog = (timer: Timer) => {
+        setLogs(oldValues => [...oldValues, new Date().toLocaleTimeString() + ": " + timer.delay + ' / ' + timer.clickTime + '\n'])
     }
 
     function startTimer() {
@@ -47,9 +49,9 @@ const App = () => {
         }
 
         const timeoutId = setTimeout(() => {
-            writeLog(Number(timer.value))
+            writeLog(timer.value!)
             startTimer()
-        }, timer.value * 1000)
+        }, timer.value.delay * 1000)
         setTimeoutId(timeoutId)
     }
 
@@ -71,7 +73,7 @@ const App = () => {
             <div className="TimersApp__logs">
                 <h5 className="TimersApp__logs-title">Логи</h5>
 
-                <Textarea data={logs.join('')} className="TimersApp__logs-output" rows={15} readOnly={true} />
+                <Textarea data={logs.join('')} className="TimersApp__logs-output" rows={15} readOnly={true}/>
             </div>
         </div>
     );
