@@ -2,18 +2,31 @@ import React, {useEffect, useState} from 'react';
 import Button from "./Components/Button";
 import './App.scss';
 
-const App = () => {
-    const [logs, setLogs] = useState<Array<string>>([])
-    const [currentTimers, setCurrentTimers] = useState<Array<number>>([])
-    const [timeoutId, setTimeoutId] = useState<any>()
-    const [isTimersStarted, setIsTimerStarted] = useState<boolean>(false)
+// создаем генератор таймеров
+function* generateTimers(timersQueue: Array<number>) {
+    for (let i = 0; i < timersQueue.length; i++) {
+        yield timersQueue[i]
+    }
+}
 
-    console.log('currentTimers', currentTimers)
+const timersQueue: Array<number> = []
+
+const App = () => {
+
+    const [logs, setLogs] = useState<Array<string>>([])
+    const [timeoutId, setTimeoutId] = useState<any>()
+    const [isTimersStarted, setIsTimerStarted] = useState<boolean | undefined>(false)
+    const [timersGenerator, setTimersGenerator] = useState(generateTimers(timersQueue))
+
+    console.log('isTimersStarted', isTimersStarted)
 
     // добавляет таймер в очередь
     const addTimer = (timer: number) => {
-        setCurrentTimers(timers => [...timers, timer])
+        timersQueue.push(timer)
+
         if (!isTimersStarted) {
+            setTimersGenerator(generateTimers(timersQueue))
+            setIsTimerStarted(true)
             startTimer()
         }
     }
@@ -23,38 +36,24 @@ const App = () => {
         setLogs(oldValues => [...oldValues, new Date().toLocaleTimeString() + ": " + delay + '\n'])
     }
 
-    // создаем генератор таймеров
-    function* generateTimers() {
-        for (let i = 0; i < currentTimers.length; i++) {
-            console.log('currentTimers[i]', currentTimers[i])
-            yield currentTimers[i]
-        }
-    }
-
-    // инициализируем генератор
-
-
-    // Запуск генератора
-
-    let timersGenerator:  Generator<number, void, unknown>;
-
+    // Запуск таймера
     function startTimer() {
+
         let timer = timersGenerator.next()
-        console.log('timer', timer)
-        if (timer.done) return;
+
+        if (timer.done) {
+            console.log('if (timer.done) {')
+            setIsTimerStarted(false);
+            timersQueue.length = 0
+            return;
+        }
 
         const timeoutId = setTimeout(() => {
-            console.log(timer.value)
-            // writeLog(Number(timer.value))
+            writeLog(Number(timer.value))
             startTimer()
         }, timer.value * 1000)
         setTimeoutId(timeoutId)
     }
-
-    useEffect(() => {
-        timersGenerator = generateTimers()
-    }, [currentTimers])
-
 
     // clear the text area logs field
     const clearLogs = () => {
