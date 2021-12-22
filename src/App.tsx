@@ -14,7 +14,6 @@ function* generateTimers(timersQueue: Array<Timer>) {
 const timersQueue: Array<Timer> = []
 
 const App = () => {
-
     // output to the logs field
     const [logs, setLogs] = useState<Array<string>>([])
     // current timeout ID for cancelling
@@ -39,7 +38,7 @@ const App = () => {
         setLogs(oldValues => [...oldValues, new Date().toLocaleTimeString() + ": " + timer.delay + ' / ' + timer.clickTime + '\n'])
     }
 
-    function startTimer() {
+    const startTimer = () => {
         let timer = timersGenerator.next()
 
         if (timer.done) {
