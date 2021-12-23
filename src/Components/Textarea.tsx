@@ -1,18 +1,18 @@
 import React, {HTMLAttributes} from "react";
 
 interface TextareaProps extends HTMLAttributes<HTMLTextAreaElement>  {
+    className: string;
     data: string;
     [x: string]: any
 }
 
-const Textarea = ({className, data, rows, readOnly}: TextareaProps) => {
+const Textarea = ({className, data, ...otherTextAreaProps}: TextareaProps) => {
     return (
-            <textarea
-                className={className}
-                readOnly={readOnly}
-                value={data}
-                rows={rows}
-            />
+        <textarea
+            className={className}
+            value={data}
+            {...otherTextAreaProps}
+        />
     )
 }
 
